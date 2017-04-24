@@ -1,6 +1,9 @@
 package server;
 
+import java.io.InputStream;
 import java.util.HashMap;
+import java.util.HashSet;
+
 import common.*;
 
 /**
@@ -21,4 +24,27 @@ public interface IDataAccess {
 	 * @param userSheet
 	 */
 	public void storeUserSheet(HashMap<String,User> userSheet);
+	/**
+	 * 获取文件列表
+	 * @return fileSheet
+	 */
+	public HashMap<String,CloudFile> getFileSheet();
+	/**
+	 * 存储文件列表
+	 */
+	public void storeFileSheet(HashMap<String,CloudFile> fileSheet);
+	/**
+	 * 获取用户文件库
+	 * @return fileSheet
+	 */
+	public HashMap<String,HashSet<CloudFile>> getUserFileSheet();
+	/**
+	 * 存储用户文件库
+	 */
+	public void storeUserFileSheet(HashMap<String,HashSet<CloudFile>> userFileSheet);
+	/**
+	 * 上传文件
+	 */
+	public void uploadFile(CloudFile file,InputStream in);
+	
 }

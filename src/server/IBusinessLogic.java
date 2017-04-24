@@ -1,7 +1,11 @@
 package server;
 
+import java.io.InputStream;
+
 import common.ChangePasswdResult;
+import common.CloudFile;
 import common.Credential;
+import common.FileResult;
 import common.LoginResult;
 import common.RegisterResult;
 
@@ -32,4 +36,12 @@ public interface IBusinessLogic {
 	 * @return 修改结果
 	 */
 	public ChangePasswdResult changePasswd(Credential cred, String newPassword);
+	/**
+	 * 上传文件服务接口
+	 * @param cloudFile
+	 * @param content
+	 * @return 上传结果
+	 */
+	public FileResult uploadFile(CloudFile cloudFile, InputStream content);
+	
 }
