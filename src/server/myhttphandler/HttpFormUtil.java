@@ -1,5 +1,6 @@
 package server.myhttphandler;
 
+import java.net.URI;
 import java.util.List;
 
 import com.sun.net.httpserver.Headers;
@@ -41,5 +42,25 @@ public class HttpFormUtil {
 			}
 		}
 		return sessionID;
+	}
+	
+	/**
+	 * 从URI中得到参数 
+	 * @param uri
+	 * @param key
+	 * @return value
+	 * example ?userID=yzj, key=userID, return yzj
+	 */
+	public static String getQueryParameter(URI uri,String key){
+		if (uri.getQuery()==null)
+			return null;
+		String[] pairs = uri.getQuery().split("&");
+		String value=null;
+		for (String pair:pairs){
+			if (pair.startsWith(key+"=")){
+				value=pair.substring(key.length()+1);
+			}
+		}
+		return value;
 	}
 }

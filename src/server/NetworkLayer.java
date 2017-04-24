@@ -25,6 +25,7 @@ public class NetworkLayer implements INetworkLayer{
 	private LoginHandler loginHandler;
 	private RegisterHandler registerHandler;
 	private ChangePasswdHandler changePwHandler;
+	private FileHandler fileHandler;
 	/**
 	 * 构造方法
 	 * @param business
@@ -36,6 +37,7 @@ public class NetworkLayer implements INetworkLayer{
 		registerHandler=new RegisterHandler(m_Business);
 		//changePwHandler=new ChangePasswdHandler(m_Business,m_Session);
 		changePwHandler=new ChangePasswdHandler(m_Business,m_Session);
+		fileHandler=new FileHandler(m_Business,m_Session);
 	}
 	/**
 	 * 启动服务器
@@ -47,6 +49,7 @@ public class NetworkLayer implements INetworkLayer{
 		server.createContext("/cloudshare/login",loginHandler); //登录
 		server.createContext("/cloudshare/register",registerHandler);     //注册
 		server.createContext("/cloudshare/changePw", changePwHandler); //修改密码
+		server.createContext("/cloudshare/file",fileHandler);			//文件操作
 		server.setExecutor(java.util.concurrent.Executors.newCachedThreadPool());  //线程池
 		server.start(); //启动服务器
 	}

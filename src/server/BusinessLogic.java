@@ -121,13 +121,13 @@ public class BusinessLogic implements IBusinessLogic{
 	 * 调用DAL接口，并生成fileID，在两个列表里新增内容
 	 */
 	public FileResult uploadFile(CloudFile cloudFile, InputStream content) {
-		m_DataAccess.uploadFile(cloudFile, content); 	//调用接口，存储文件到磁盘
-		
 		String fileID;									//设置fileID
 		do{
 			fileID=UUID.randomUUID().toString();
 		}while (m_FileSheet.containsKey(fileID));  
 		cloudFile.setFileID(fileID);
+		
+		m_DataAccess.uploadFile(cloudFile, content); 	//调用接口，存储文件到磁盘
 		
 		SimpleDateFormat df = 							//设置uploadTime
 				new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
