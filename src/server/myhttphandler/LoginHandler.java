@@ -41,13 +41,9 @@ public class LoginHandler implements HttpHandler{
 		}
 		
 		Headers requestHeader=t.getRequestHeaders();   	//获取Header
-		if (requestHeader.containsKey("Content-Type")){ //若Header中包含Content-Type信息，判断是否为json类型
-			/*System.out.println(requestHeader.getFirst("Content-Type"));
-			System.out.println(requestHeader);*/
-			if (!requestHeader.getFirst("Content-Type").contains("application/json")){
-				t.sendResponseHeaders(400, -1);
-				return;
-			}
+		if (!HttpFormUtil.judgeContentType(requestHeader, "application/json")){ 
+			t.sendResponseHeaders(400, -1);
+			return;
 		}
 		
 		InputStream in=t.getRequestBody();                      //获取Body

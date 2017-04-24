@@ -1,6 +1,5 @@
 package server.myhttphandler;
 
-import java.util.List;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -41,31 +40,14 @@ public class ChangePasswdHandler implements HttpHandler{
 		 * 以下进行Content-Type判断
 		 */
 		Headers requestHeader=t.getRequestHeaders();   	//获取Header
-		if (requestHeader.containsKey("Content-Type")){ //若Header中包含Content-Type信息，判断是否为json类型
-			if (!requestHeader.getFirst("Content-Type").contains("application/json")){
-				t.sendResponseHeaders(400, -1);
-				return;
-			}
+		if (!HttpFormUtil.judgeContentType(requestHeader, "application/json")){ 
+			t.sendResponseHeaders(400, -1);
+			return;
 		}
 		/**
 		 * 以下进行Cookie判断
 		 */
-		if (!requestHeader.containsKey("Cookie")){  //若Head中不包含Cookie，则返回403
-			t.sendResponseHeaders(403, -1);
-			return;
-		}		
-		List<String> cookieList=requestHeader.get("Cookie"); //获取Cookie列表
-		String sessionID=null;
-		for (String aCookie:cookieList){                    //遍历Cookie列表
-			if (aCookie.startsWith("sessionID=")){
-				sessionID=aCookie.substring(10);            //获取sessionID
-				break;
-			}
-		}
-		if (sessionID==null){                               //若Cookie里面没有sessionID返回403
-			t.sendResponseHeaders(403, -1);
-			return;
-		}
+		String sessionID=HttpFormUtil.getCookie(requestHeader);
 		String userID=m_Session.getUserID(sessionID);       //根据sessionID取出userID
 		if (userID==null){									//sessionID无效则返回403
 			t.sendResponseHeaders(403, -1);

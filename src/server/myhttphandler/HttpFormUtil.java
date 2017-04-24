@@ -30,10 +30,10 @@ public class HttpFormUtil {
 	 */
 	public static String getCookie(Headers requestHeader){
 		if (!requestHeader.containsKey("Cookie")){  //若Head中不包含Cookie，则返回403
-			return null;
+			return "";
 		}		
 		List<String> cookieList=requestHeader.get("Cookie"); //获取Cookie列表
-		String sessionID=null;
+		String sessionID="";
 		for (String aCookie:cookieList){                    //遍历Cookie列表
 			if (aCookie.startsWith("sessionID=")){
 				sessionID=aCookie.substring(10);            //获取sessionID
