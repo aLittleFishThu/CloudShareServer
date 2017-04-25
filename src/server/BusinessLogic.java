@@ -5,7 +5,9 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.UUID;
+import java.util.Map.Entry;
 
 import common.*;
 
@@ -17,8 +19,7 @@ public class BusinessLogic implements IBusinessLogic{
 	private final IDataAccess m_DataAccess;
 	private HashMap<String,User> m_UserSheet=new HashMap<String,User>(); 
 	private HashMap<String,CloudFile> m_FileSheet=new HashMap<String,CloudFile>();
-	private HashMap<String,HashSet<CloudFile>> m_UserFileSheet
-		=new HashMap<String,HashSet<CloudFile>>();
+	
 	
 	/**
 	 * 构造方法
@@ -32,7 +33,6 @@ public class BusinessLogic implements IBusinessLogic{
 	private void retrieveData(){
 		m_UserSheet=m_DataAccess.getUserSheet();   //开机加载数据
 		m_FileSheet=m_DataAccess.getFileSheet();
-		m_UserFileSheet=m_DataAccess.getUserFileSheet();
 	}
 
 	//定义匿名内部类，关机自动存储
@@ -42,7 +42,6 @@ public class BusinessLogic implements IBusinessLogic{
 			public void run() { 
 				m_DataAccess.storeUserSheet(m_UserSheet); //存储用户列表
 				m_DataAccess.storeFileSheet(m_FileSheet); //存储文件列表
-				m_DataAccess.storeUserFileSheet(m_UserFileSheet);
 				System.out.println("storeOK");
 			}
 		});
@@ -121,7 +120,18 @@ public class BusinessLogic implements IBusinessLogic{
 	 * 调用DAL接口，并生成fileID，在两个列表里新增内容
 	 */
 	public FileResult uploadFile(CloudFile cloudFile, InputStream content) {
-		String fileID;									//设置fileID
+		String filename=cloudFile.getFilename();        //除去该用户的重名文件
+		String creator=cloudFile.getCreator();         
+		Iterator<Entry<String,CloudFile>> iter=m_FileSheet.entrySet().iterator();
+		while (iter.hasNext()){
+			CloudFile aFile=iter.next().getValue();
+			if (aFile.getFilename().equals(filename)&&
+					aFile.getCreator().equals(creator)){
+				iter.remove();
+			}
+		}
+	
+		String fileID;									//设置fileID									
 		do{
 			fileID=UUID.randomUUID().toString();
 		}while (m_FileSheet.containsKey(fileID));  
@@ -135,16 +145,29 @@ public class BusinessLogic implements IBusinessLogic{
 		cloudFile.setUploadTime(uploadTime);
 		
 		m_FileSheet.put(fileID, cloudFile);				//加入文件列表
-		
-		String userID=cloudFile.getCreator();			//加入以用户为关键字的检索目录
-		if (m_UserFileSheet.containsKey(userID))
-			m_UserFileSheet.get(userID).add(cloudFile);
-		else{
-			HashSet<CloudFile> fileDirectory=new HashSet<CloudFile>();
-			fileDirectory.add(cloudFile);
-			m_UserFileSheet.put(userID, fileDirectory);
-		}
-		
 		return FileResult.OK;							//返回上传结果
+	}
+
+	
+	@Override
+	/**
+	 * 实现BLL层获取指定用户目录的接口服务
+	 * @param targetID 目标用户
+	 * @param userID   当前用户
+	 * @return 获取结果
+	 */
+	public FileDirectoryResult getDirectory(String targetID, String userID) {
+		HashSet<CloudFile> fileDirectory=new HashSet<CloudFile>(); //遍历文件列表
+		Iterator<Entry<String,CloudFile>> iter=m_FileSheet.entrySet().iterator();
+		while (iter.hasNext()){
+			CloudFile aFile=iter.next().getValue();
+			if (aFile.getCreator().equals(targetID)){		//找到目标用户的文件
+				if ((targetID.equals(userID))||				//若为自己文件或他人公开文件		
+						aFile.getAuthorization().equals(Authorization.Public)){
+					fileDirectory.add(aFile);				//加入文件列表
+				}
+			}
+		}
+		return new FileDirectoryResult(fileDirectory,FileResult.OK);  //返回结果给上层
 	}
 }

@@ -26,6 +26,8 @@ public class NetworkLayer implements INetworkLayer{
 	private RegisterHandler registerHandler;
 	private ChangePasswdHandler changePwHandler;
 	private FileHandler fileHandler;
+	private DirectoryHandler directoryHandler;
+	
 	/**
 	 * 构造方法
 	 * @param business
@@ -35,9 +37,9 @@ public class NetworkLayer implements INetworkLayer{
 		m_Session=session;
 		loginHandler=new LoginHandler(m_Business,m_Session);
 		registerHandler=new RegisterHandler(m_Business);
-		//changePwHandler=new ChangePasswdHandler(m_Business,m_Session);
 		changePwHandler=new ChangePasswdHandler(m_Business,m_Session);
 		fileHandler=new FileHandler(m_Business,m_Session);
+		directoryHandler=new DirectoryHandler(m_Business,m_Session);
 	}
 	/**
 	 * 启动服务器
@@ -45,11 +47,12 @@ public class NetworkLayer implements INetworkLayer{
 	 * @throws IOException 
 	 */
 	public void startServer() throws IOException{
-		server = HttpServer.create(new InetSocketAddress(port), 0);  //创建服务器
-		server.createContext("/cloudshare/login",loginHandler); //登录
-		server.createContext("/cloudshare/register",registerHandler);     //注册
-		server.createContext("/cloudshare/changePw", changePwHandler); //修改密码
+		server = HttpServer.create(new InetSocketAddress(port), 0); 	//创建服务器
+		server.createContext("/cloudshare/login",loginHandler); 		//登录
+		server.createContext("/cloudshare/register",registerHandler);   //注册
+		server.createContext("/cloudshare/changePw", changePwHandler); 	//修改密码
 		server.createContext("/cloudshare/file",fileHandler);			//文件操作
+		server.createContext("/cloudshare/getDirectory",directoryHandler); //获取目录
 		server.setExecutor(java.util.concurrent.Executors.newCachedThreadPool());  //线程池
 		server.start(); //启动服务器
 	}

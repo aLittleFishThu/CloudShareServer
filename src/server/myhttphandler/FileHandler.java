@@ -28,7 +28,6 @@ public class FileHandler implements HttpHandler{
 	}
 
 	public void handle(HttpExchange t) throws IOException {
-		
 		/**
 		 * 取出会话，判断Cookie
 		 */

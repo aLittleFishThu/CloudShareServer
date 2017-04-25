@@ -9,7 +9,6 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.HashMap;
-import java.util.HashSet;
 
 import common.CloudFile;
 import common.User;
@@ -23,7 +22,7 @@ public class DataAccess implements IDataAccess{
 	//private String m_userSheetPath=System.getenv("yzjCloud");  //用户列表存放路径
 	private String m_UserSheetPath="C:\\Users\\yzj\\Desktop\\1.txt"; //用户列表存放路径 
 	private String m_FileSheetPath="C:\\Users\\yzj\\Desktop\\2.txt"; //文件列表存放路径
-	private String m_UserFileSheetPath="C:\\Users\\yzj\\Desktop\\3.txt";
+	//private String m_UserFileSheetPath="C:\\Users\\yzj\\Desktop\\3.txt";
 																	 //用户文件库存放路径
 	private String m_FilePath="C:\\Users\\yzj\\Desktop";             //文件存放路径
 	
@@ -143,9 +142,9 @@ public class DataAccess implements IDataAccess{
 	}
 
 
-	/**
+/*	*//**
 	 * 获取以用户为关键字的文件目录
-	 */
+	 *//*
 	@SuppressWarnings("unchecked")
 	@Override
 	public HashMap<String, HashSet<CloudFile>> getUserFileSheet() {
@@ -181,9 +180,9 @@ public class DataAccess implements IDataAccess{
 		return userFileSheet;
 	}
 
-	/**
+	*//**
 	 * 存储以用户为关键字的文件目录
-	 */
+	 *//*
 	@Override
 	public void storeUserFileSheet(HashMap<String, HashSet<CloudFile>> userFileSheet) {
 		FileOutputStream fos;
@@ -202,7 +201,7 @@ public class DataAccess implements IDataAccess{
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-	}
+	}*/
 	
 	/**
 	 * 实现上传文件接口

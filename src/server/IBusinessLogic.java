@@ -5,6 +5,7 @@ import java.io.InputStream;
 import common.ChangePasswdResult;
 import common.CloudFile;
 import common.Credential;
+import common.FileDirectoryResult;
 import common.FileResult;
 import common.LoginResult;
 import common.RegisterResult;
@@ -43,5 +44,11 @@ public interface IBusinessLogic {
 	 * @return 上传结果
 	 */
 	public FileResult uploadFile(CloudFile cloudFile, InputStream content);
-	
+	/**
+	 * 获取指定用户文件目录
+	 * @param targetID 目标用户
+	 * @param userID   当前用户
+	 * @return 获取结果和目录HashSet
+	 */
+	public FileDirectoryResult getDirectory(String targetID,String userID);
 }

@@ -23,8 +23,6 @@ public class TestDAL {
         set.add(cloud1);set.add(cloud2);
         sheet.put("1", set);
         dataAccess.storeUserFileSheet(sheet);*/
-        HashMap<String,HashSet<CloudFile>> sheet2=dataAccess.getUserFileSheet();
-        System.out.println(sheet2);
         HashMap<String,CloudFile> sheet3=dataAccess.getFileSheet();
         System.out.println(sheet3);
 	}
