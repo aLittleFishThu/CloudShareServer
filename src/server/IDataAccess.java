@@ -46,5 +46,8 @@ public interface IDataAccess {
 	 * 上传文件
 	 */
 	public void uploadFile(CloudFile file,InputStream in);
-	
+	/**
+	 * 删除文件
+	 */
+	public boolean deleteFile(String fileID);
 }

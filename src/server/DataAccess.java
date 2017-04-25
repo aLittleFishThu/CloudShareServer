@@ -226,4 +226,15 @@ public class DataAccess implements IDataAccess{
 			e.printStackTrace();
 		}
 	}
+
+	@Override
+	/**
+	 * 删除文件
+	 * @param fileID
+	 * @return 文件不存在返回false，成功删除返回true
+	 */
+	public boolean deleteFile(String fileID) {
+		File file=new File(m_FilePath+'\\'+fileID+".dat");
+		return file.delete();		
+	}
 }

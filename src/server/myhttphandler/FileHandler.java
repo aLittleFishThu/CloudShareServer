@@ -43,31 +43,41 @@ public class FileHandler implements HttpHandler{
 		 * 以下进行Method判断，进一步分发任务，获得FileResult
 		 */
 		String requestMethod=t.getRequestMethod();     //获取Method
-		FileResult result=null;
 		if (requestMethod.equals("POST")){         	
 			if (HttpFormUtil.judgeContentType(requestHeader, "application/json"))
-				result=handleRename(t,userID);			//POST+JSON: Rename
+				handleRename(t,userID);					//POST+JSON: Rename
 			else 
-				result=handleUpload(t,userID);			//POST+file：upload
+				handleUpload(t,userID);					//POST+file：upload
 		}
 		else if (requestMethod.equals("GET")){			//GET:download
-			result=handleDownload(t,userID);
+			handleDownload(t,userID);
 		}
 		else if (requestMethod.equals("DELETE")){		//DELETE:download
-			result=handleDelete(t,userID);
+			handleDelete(t,userID);
 		}
 		else{											//format error
 			t.sendResponseHeaders(400, -1);
 			return;
 		}
+	}
+	private void handleUpload(HttpExchange t,String userID) throws IOException{
+		/**
+		 * 建立CloudFile，获取文件内容，调用接口
+		 */
+		URI uri=t.getRequestURI();						//获取URI
+		String filename=HttpFormUtil.getQueryParameter(uri, "filename");
+		if (filename==null){  							//获取参数
+			t.sendResponseHeaders(400, -1);
+			return;
+		}
+		CloudFile cloudFile=new CloudFile(userID,filename);
+		InputStream content=t.getRequestBody();         //获取文件内容
+		FileResult result=m_Business.uploadFile(cloudFile, content);   
+														//进行上传文件操作
 		
 		/**
 		 * 发送响应信息
 		 */
-		if (result==null){
-			t.sendResponseHeaders(400, -1);
-			return;
-		}
 		Headers h=t.getResponseHeaders();               //设置响应头Header
 		h.add("Content-Type","application/json");       //Content-Type加入响应头
 		
@@ -80,34 +90,43 @@ public class FileHandler implements HttpHandler{
 		OutputStream os = t.getResponseBody();          //返回上传结果写入响应Body
 		os.write(response.getBytes());
 		os.close();       
-			
 	}
-	private FileResult handleUpload(HttpExchange t,String userID) throws IOException{
+	
+	private void handleDownload(HttpExchange t,String userID) throws IOException{
+
+	}
+	
+	private void handleDelete(HttpExchange t,String userID) throws IOException{
 		/**
-		 * 以下为CloudFile建立及文件内容获取
+		 * 获取fileID，调用接口
 		 */
 		URI uri=t.getRequestURI();						//获取URI
-		String filename=HttpFormUtil.getQueryParameter(uri, "filename");
-		if (filename==null)  							//获取参数
-			return null;
-	
-		CloudFile cloudFile=new CloudFile(userID,filename);
-		InputStream content=t.getRequestBody();         //获取文件内容
-	    
-		FileResult result=m_Business.uploadFile(cloudFile, content);   
-														//进行上传文件操作  
-		return result;
+		String fileID=HttpFormUtil.getQueryParameter(uri, "fileID");
+		if (fileID==null){  							//获取参数
+			t.sendResponseHeaders(400, -1);
+			return;
+		}
+		FileResult result=m_Business.deleteFile(fileID,userID);
+														//进行删除文件操作     
+														
+		/**
+		 * 发送响应信息
+		 */
+		Headers h=t.getResponseHeaders();               //设置响应头Header
+		h.add("Content-Type","application/json");       //Content-Type加入响应头
+		
+		JSONObject jsonResponse=new JSONObject();     
+		jsonResponse.put("status", result.getStatus()); //将删除结果包装为JSON对象
+		String response=jsonResponse.toString();        //转为字符串
+		
+		t.sendResponseHeaders(200, response.length());  //发送响应码Code
+		
+		OutputStream os = t.getResponseBody();          //返回上传结果写入响应Body
+		os.write(response.getBytes());
+		os.close();       		
 	}
 	
-	private FileResult handleDownload(HttpExchange t,String userID){
-		return null;
-	}
-	
-	private FileResult handleDelete(HttpExchange t,String userID){
-		return null;
-	}
-	
-	private FileResult handleRename(HttpExchange t,String userID){
-		return null;
+	private void handleRename(HttpExchange t,String userID){
+
 	}
 }

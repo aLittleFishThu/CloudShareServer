@@ -127,7 +127,8 @@ public class BusinessLogic implements IBusinessLogic{
 			CloudFile aFile=iter.next().getValue();
 			if (aFile.getFilename().equals(filename)&&
 					aFile.getCreator().equals(creator)){
-				iter.remove();
+				m_DataAccess.deleteFile(aFile.getFileID()); //从磁盘里删除
+				iter.remove();								//从表中删除
 			}
 		}
 	
@@ -157,6 +158,9 @@ public class BusinessLogic implements IBusinessLogic{
 	 * @return 获取结果
 	 */
 	public FileDirectoryResult getDirectory(String targetID, String userID) {
+		if (!m_UserSheet.containsKey(targetID))				//目标用户不存在直接返回wrong
+			return new FileDirectoryResult(FileResult.wrong);
+		
 		HashSet<CloudFile> fileDirectory=new HashSet<CloudFile>(); //遍历文件列表
 		Iterator<Entry<String,CloudFile>> iter=m_FileSheet.entrySet().iterator();
 		while (iter.hasNext()){
@@ -169,5 +173,18 @@ public class BusinessLogic implements IBusinessLogic{
 			}
 		}
 		return new FileDirectoryResult(fileDirectory,FileResult.OK);  //返回结果给上层
+	}
+
+	@Override
+	public FileResult deleteFile(String fileID, String userID) {
+		CloudFile cloudFile=m_FileSheet.get(fileID);	//检查权限
+		if (!cloudFile.getCreator().equals(userID))
+			return FileResult.wrong;
+		if (!m_DataAccess.deleteFile(fileID))			//检查是否成功删除
+			return FileResult.wrong;
+		else{											//若成功删除
+			m_FileSheet.remove(fileID);					//从文件列表里除去
+			return FileResult.OK;						//返回删除成功
+		}
 	}
 }

@@ -51,4 +51,11 @@ public interface IBusinessLogic {
 	 * @return 获取结果和目录HashSet
 	 */
 	public FileDirectoryResult getDirectory(String targetID,String userID);
+	/**
+	 * 删除指定文件
+	 * @param fileID
+	 * @param userID
+	 * @return 删除结果（成功删除为OK，文件不存在或无权限为wrong）
+	 */
+	public FileResult deleteFile(String fileID,String userID);
 }
