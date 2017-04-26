@@ -1,5 +1,6 @@
 package server;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -207,8 +208,8 @@ public class DataAccess implements IDataAccess{
 	 * 实现上传文件接口
 	 */
 	@Override
-	public void uploadFile(CloudFile cloudFile, InputStream content)  {
-		String filePath=m_FilePath+'\\'+cloudFile.getFileID()+".dat";
+	public void uploadFile(String fileID, InputStream content)  {
+		String filePath=m_FilePath+"\\"+fileID+".dat";
 		FileOutputStream result;
 		try {
 			result = new FileOutputStream(filePath);
@@ -236,5 +237,21 @@ public class DataAccess implements IDataAccess{
 	public boolean deleteFile(String fileID) {
 		File file=new File(m_FilePath+'\\'+fileID+".dat");
 		return file.delete();		
+	}
+
+	@Override
+	/**
+	 * 下载文件
+	 * @param File file
+	 * @return 文件内容
+	 */
+	public byte [] downloadFile(String fileID) throws IOException {
+		File file=new File(m_FilePath+'\\'+fileID+".dat");
+		byte [] bytearray  = new byte [(int)file.length()];
+	    FileInputStream fis= new FileInputStream(file);
+	    BufferedInputStream bis = new BufferedInputStream(fis);
+	    bis.read(bytearray, 0, bytearray.length);
+	    bis.close();
+	    return bytearray;
 	}
 }

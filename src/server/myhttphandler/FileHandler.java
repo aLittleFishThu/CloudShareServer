@@ -1,5 +1,6 @@
 package server.myhttphandler;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -16,6 +17,7 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
 import common.CloudFile;
+import common.DownloadFileResult;
 import common.FileResult;
 
 public class FileHandler implements HttpHandler{
@@ -93,7 +95,28 @@ public class FileHandler implements HttpHandler{
 	}
 	
 	private void handleDownload(HttpExchange t,String userID) throws IOException{
-
+		/**
+		 * 建立CloudFile，获取文件内容，调用接口
+		 */
+		URI uri=t.getRequestURI();						//获取URI
+		String fileID=HttpFormUtil.getQueryParameter(uri, "fileID");
+		if (fileID==null){  							//获取参数
+			t.sendResponseHeaders(400, -1);
+			return;
+		}
+		DownloadFileResult result=m_Business.downloadFile(fileID,userID);   
+														//进行下载文件操作
+		
+		/**
+		 * 发送响应信息
+		 */
+		if (result.getResult().equals(FileResult.wrong))//资源不存在，返回406
+			t.sendResponseHeaders(406, -1);
+		t.sendResponseHeaders(200, 0);					//发送响应码
+	    byte[] content=result.getContent();
+		OutputStream os = t.getResponseBody();          //返回上传结果写入响应Body
+	    os.write(content);
+	    os.close();  
 	}
 	
 	private void handleDelete(HttpExchange t,String userID) throws IOException{

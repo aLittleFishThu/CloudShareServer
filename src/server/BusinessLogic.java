@@ -1,5 +1,7 @@
 package server;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -137,8 +139,7 @@ public class BusinessLogic implements IBusinessLogic{
 			fileID=UUID.randomUUID().toString();
 		}while (m_FileSheet.containsKey(fileID));  
 		cloudFile.setFileID(fileID);
-		
-		m_DataAccess.uploadFile(cloudFile, content); 	//调用接口，存储文件到磁盘
+		m_DataAccess.uploadFile(fileID, content); 	//调用接口，存储文件到磁盘
 		
 		SimpleDateFormat df = 							//设置uploadTime
 				new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -176,6 +177,12 @@ public class BusinessLogic implements IBusinessLogic{
 	}
 
 	@Override
+	/**
+	 * 实现BLL层的删除文件接口服务
+	 * @param fileID
+	 * @param userID
+	 * @return FileResult
+	 */
 	public FileResult deleteFile(String fileID, String userID) {
 		CloudFile cloudFile=m_FileSheet.get(fileID);	//检查权限
 		if (!cloudFile.getCreator().equals(userID))
@@ -185,6 +192,29 @@ public class BusinessLogic implements IBusinessLogic{
 		else{											//若成功删除
 			m_FileSheet.remove(fileID);					//从文件列表里除去
 			return FileResult.OK;						//返回删除成功
+		}
+	}
+
+	@Override
+	/**
+	 * 实现BLL层下载文件的接口服务
+	 * @param fileID
+	 * @param userID
+	 */
+	public DownloadFileResult downloadFile(String fileID, String userID) {
+		if (!m_FileSheet.containsKey(fileID))			//检查文件是否存在
+			return new DownloadFileResult();
+		CloudFile cloudFile=m_FileSheet.get(fileID);
+		if ((!cloudFile.getCreator().equals(userID))&&	//检查是否有权限
+			(cloudFile.getAuthorization().equals(Authorization.Private)))
+			return new DownloadFileResult();
+		try {
+			byte[] content = m_DataAccess.downloadFile(fileID);
+			return new DownloadFileResult(content,FileResult.OK);
+		} catch (FileNotFoundException e) {
+			return new DownloadFileResult();
+		} catch (IOException e) {
+			return new DownloadFileResult();
 		}
 	}
 }

@@ -5,6 +5,7 @@ import java.io.InputStream;
 import common.ChangePasswdResult;
 import common.CloudFile;
 import common.Credential;
+import common.DownloadFileResult;
 import common.FileDirectoryResult;
 import common.FileResult;
 import common.LoginResult;
@@ -58,4 +59,11 @@ public interface IBusinessLogic {
 	 * @return 删除结果（成功删除为OK，文件不存在或无权限为wrong）
 	 */
 	public FileResult deleteFile(String fileID,String userID);
+	/**
+	 * 下载指定文件
+	 * @param fileID
+	 * @param userID
+	 * @return 下载内容
+	 */
+	public DownloadFileResult downloadFile(String fileID,String userID);
 }

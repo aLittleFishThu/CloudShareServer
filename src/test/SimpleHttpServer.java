@@ -21,7 +21,6 @@ public class SimpleHttpServer {
     server.createContext("/get", new GetHandler());
     server.setExecutor(null); // creates a default executor
     server.start();
-    server.stop(30);
   }
 
   static class InfoHandler implements HttpHandler {

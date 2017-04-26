@@ -1,5 +1,7 @@
 package server;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 //import java.util.HashSet;
@@ -45,9 +47,15 @@ public interface IDataAccess {
 	/**
 	 * 上传文件
 	 */
-	public void uploadFile(CloudFile file,InputStream in);
+	public void uploadFile(String fileID,InputStream in);
 	/**
 	 * 删除文件
 	 */
 	public boolean deleteFile(String fileID);
+	/**
+	 * 下载文件
+	 * @throws FileNotFoundException 
+	 * @throws IOException 
+	 */
+	public byte [] downloadFile(String fileID) throws FileNotFoundException, IOException;
 }
