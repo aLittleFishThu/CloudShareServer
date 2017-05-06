@@ -124,19 +124,19 @@ public class BusinessLogic implements IBusinessLogic{
 	 * 调用DAL接口，并生成fileID，在两个列表里新增内容
 	 */
 	public FileResult uploadFile(CloudFile cloudFile, InputStream content) {
-		String filename=cloudFile.getFilename();        //除去该用户的重名文件
+		String filename=cloudFile.getFilename();        //替换该用户的重名文件
 		String creator=cloudFile.getCreator();         
 		Iterator<Entry<String,CloudFile>> iter=m_FileSheet.entrySet().iterator();
 		while (iter.hasNext()){
 			CloudFile aFile=iter.next().getValue();
 			if (aFile.getFilename().equals(filename)&&
 					aFile.getCreator().equals(creator)){
-				m_DataAccess.deleteFile(aFile.getFileID()); //从磁盘里删除
-				iter.remove();								//从表中删除
+			    m_DataAccess.uploadFile(aFile.getFileID(), content);
+				return FileResult.OK;
 			}
 		}
 	
-		String fileID;									//设置fileID									
+		String fileID;									//无重名文件时设置fileID									
 		do{
 			fileID=UUID.randomUUID().toString();
 		}while (m_FileSheet.containsKey(fileID));  
