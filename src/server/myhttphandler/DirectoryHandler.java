@@ -45,7 +45,7 @@ public class DirectoryHandler implements HttpHandler{
 		String sessionID=HttpFormUtil.getCookie(requestHeader);
 		String userID=m_Session.getUserID(sessionID);       //根据sessionID取出userID
 		if (userID==null){									//sessionID无效则返回403
-			t.sendResponseHeaders(403, -1);
+			t.sendResponseHeaders(401, -1);
 			return;
 		}*/
 		String userID="yzj";
@@ -74,12 +74,12 @@ public class DirectoryHandler implements HttpHandler{
 		JSONObject jsonResponse=new JSONObject();     
 		jsonResponse.put("status", status);				  //将结果包装为JSON对象
 		jsonResponse.put("directory", directoryArray);   
-		String response=jsonResponse.toString();          //转为字符串
+		byte[] response=jsonResponse.toString().getBytes("UTF-8");
 		
-		t.sendResponseHeaders(200, response.length());    //发送响应码Code
+		t.sendResponseHeaders(200, response.length);    //发送响应码Code
 		
 		OutputStream os = t.getResponseBody();            //返回结果写入响应Body
-        os.write(response.getBytes());
+        os.write(response);
         os.close();               
 	}
 }

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import org.apache.commons.io.IOUtils;
 import org.json.JSONObject;
 
 import com.sun.net.httpserver.Headers;
@@ -11,7 +12,6 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
 import common.Credential;
-import common.Convert;
 import common.LoginResult;
 
 import org.json.*;
@@ -47,7 +47,7 @@ public class LoginHandler implements HttpHandler{
 		}
 		
 		InputStream in=t.getRequestBody();                      //ªÒ»°Body
-		String requestBody=Convert.toString(in); 
+		String requestBody=IOUtils.toString(in,"UTF-8"); 
 		in.close();				
 		
 		JSONObject jsonRequest;									//Ω‚ŒˆBody

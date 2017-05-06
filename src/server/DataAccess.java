@@ -11,6 +11,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.HashMap;
 
+import org.apache.commons.io.IOUtils;
+
 import common.CloudFile;
 import common.User;
 
@@ -235,8 +237,8 @@ public class DataAccess implements IDataAccess{
 	 * @return 文件不存在返回false，成功删除返回true
 	 */
 	public boolean deleteFile(String fileID) {
-		File file=new File(m_FilePath+'\\'+fileID+".dat");
-		return file.delete();		
+	    File file=new File(m_FilePath+'\\'+fileID+".dat");
+	    return file.delete();		
 	}
 
 	@Override
@@ -247,11 +249,8 @@ public class DataAccess implements IDataAccess{
 	 */
 	public byte [] downloadFile(String fileID) throws IOException {
 		File file=new File(m_FilePath+'\\'+fileID+".dat");
-		byte [] bytearray  = new byte [(int)file.length()];
 	    FileInputStream fis= new FileInputStream(file);
-	    BufferedInputStream bis = new BufferedInputStream(fis);
-	    bis.read(bytearray, 0, bytearray.length);
-	    bis.close();
-	    return bytearray;
+	    byte[] content=IOUtils.toByteArray(fis);
+	    return content;
 	}
 }

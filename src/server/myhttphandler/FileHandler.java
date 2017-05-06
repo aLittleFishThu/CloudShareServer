@@ -1,12 +1,10 @@
 package server.myhttphandler;
 
-import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import server.IBusinessLogic;
@@ -36,8 +34,8 @@ public class FileHandler implements HttpHandler{
 		Headers requestHeader=t.getRequestHeaders();   	//获取Header
 		/*String sessionID=HttpFormUtil.getCookie(requestHeader);
 		String userID=m_Session.getUserID(sessionID);   //根据sessionID取出userID
-		if (userID==null){								//sessionID无效则返回403
-			t.sendResponseHeaders(403, -1);
+		if (userID==null){								//sessionID无效则返回401
+			t.sendResponseHeaders(401, -1);
 			return;
 		}*/
 		String userID="yzj";
@@ -110,8 +108,8 @@ public class FileHandler implements HttpHandler{
 		/**
 		 * 发送响应信息
 		 */
-		if (result.getResult().equals(FileResult.wrong))//资源不存在，返回406
-			t.sendResponseHeaders(406, -1);
+		if (result.getResult().equals(FileResult.wrong))//资源不存在，返回403
+			t.sendResponseHeaders(403, -1);
 		t.sendResponseHeaders(200, 0);					//发送响应码
 	    byte[] content=result.getContent();
 		OutputStream os = t.getResponseBody();          //返回上传结果写入响应Body

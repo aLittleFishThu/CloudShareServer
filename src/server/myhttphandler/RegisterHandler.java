@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import org.apache.commons.io.IOUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -14,7 +15,6 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
 import common.Credential;
-import common.Convert;
 import common.RegisterResult;
 
 /**
@@ -47,7 +47,7 @@ public class RegisterHandler implements HttpHandler{
 		System.out.println(requestHeader);
 		
 		InputStream in=t.getRequestBody();                      //ªÒ»°Body
-		String requestBody=Convert.toString(in); 
+		String requestBody=IOUtils.toString(in,"UTF-8"); 
 		in.close();				
 		System.out.println(requestBody);
 		

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import org.apache.commons.io.IOUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -14,9 +15,11 @@ import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
+
+
 import common.Credential;
-import common.Convert;
 import common.ChangePasswdResult;
+
 
 public class ChangePasswdHandler implements HttpHandler{
 	private final IBusinessLogic m_Business;
@@ -50,7 +53,7 @@ public class ChangePasswdHandler implements HttpHandler{
 		String sessionID=HttpFormUtil.getCookie(requestHeader);
 		String userID=m_Session.getUserID(sessionID);       //根据sessionID取出userID
 		if (userID==null){									//sessionID无效则返回403
-			t.sendResponseHeaders(403, -1);
+			t.sendResponseHeaders(401, -1);
 			return;
 		}
 		
@@ -58,7 +61,7 @@ public class ChangePasswdHandler implements HttpHandler{
 		 * 以下进行Body解析及发送响应内容
 		 */
 		InputStream in=t.getRequestBody();                      //获取Body
-		String requestBody=Convert.toString(in); 
+		String requestBody=IOUtils.toString(in,"UTF-8"); 
 		in.close();				
 		
 		JSONObject jsonRequest;									//解析Body
