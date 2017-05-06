@@ -62,18 +62,19 @@ public class LoginHandler implements HttpHandler{
 			h.add("Content-Type","application/json");           //Content-Type加入响应头
 			if (result.equals(LoginResult.OK)){                 //若身份验证通过
 				String sessionID=m_Session.createSession(cred); //获取sessionID，作为cookie
-				h.add("Set-Cookie", "sessionID="+sessionID);                     //Cookie加入响应头
+				h.add("Set-Cookie", "sessionID="+sessionID);    //Cookie加入响应头
 			}
 			
 			JSONObject jsonResponse=new JSONObject();     
 			jsonResponse.put("status", result.getStatus());   //将登录结果包装为JSON对象
-			String response=jsonResponse.toString();          //转为字符串
-			
-			t.sendResponseHeaders(200, response.length());    //发送响应码Code
-			
-			OutputStream os = t.getResponseBody();            //返回登录状态写入响应Body
-            os.write(response.getBytes());
-            os.close();                                       
+		    byte[] response=jsonResponse.toString().getBytes("UTF-8");        
+                                                              //转为byte类型
+
+            t.sendResponseHeaders(200, response.length);      //发送响应码Code
+            
+            OutputStream os = t.getResponseBody();            //返回上传结果写入响应Body
+            os.write(response);
+            os.close();                                            
 			
 		}catch (JSONException e){
 			t.sendResponseHeaders(400, -1);     //JSON对象格式错误

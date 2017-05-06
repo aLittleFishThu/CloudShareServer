@@ -79,12 +79,14 @@ public class ChangePasswdHandler implements HttpHandler{
 			
 			JSONObject jsonResponse=new JSONObject();     
 			jsonResponse.put("status", result.getStatus());   //将修改结果包装为JSON对象
-			String response=jsonResponse.toString();          //转为字符串
+			byte[] response=jsonResponse.toString().getBytes("UTF-8");   
+			                                                    //转为byte类型
 			
-			t.sendResponseHeaders(200, response.length());    //发送响应码Code
+			
+			t.sendResponseHeaders(200, response.length);    //发送响应码Code
 			
 			OutputStream os = t.getResponseBody();            //返回修改写入响应Body
-            os.write(response.getBytes());
+            os.write(response);
             os.close();                                       
             
 		}catch (JSONException e){

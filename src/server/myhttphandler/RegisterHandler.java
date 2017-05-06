@@ -58,26 +58,19 @@ public class RegisterHandler implements HttpHandler{
 			String password=jsonRequest.getString("password");  
 			Credential cred=new Credential(userID,password);    //将JSON对象转换为java对象
 			RegisterResult result=m_Business.register(cred);    //进行注册验证
-			System.out.println(result);
 			
 			Headers h=t.getResponseHeaders();                   //设置响应头Header
 			h.add("Content-Type","application/json");           //Content-Type加入响应头
 			
-			System.out.println(result+"2");
-			
 			JSONObject jsonResponse=new JSONObject();     
 			jsonResponse.put("status", result.getStatus());   //将登录结果包装为JSON对象
-			String response=jsonResponse.toString();          //转为字符串
+			byte[] response=jsonResponse.toString().getBytes("UTF-8");  //转为byte类型
 			
-			System.out.println(result+"3");
-			t.sendResponseHeaders(200, response.length());    //发送响应码Code
+			t.sendResponseHeaders(200, response.length);     //发送响应码Code
 			
 			OutputStream os = t.getResponseBody();            //返回注册状态写入响应Body
-			System.out.println(result+"4");
-            os.write(response.getBytes());
+            os.write(response);
             os.close();              
-            
-            System.out.println("12");
 		}catch (JSONException e){
 			t.sendResponseHeaders(400, -1);     //JSON对象格式错误
 			return;

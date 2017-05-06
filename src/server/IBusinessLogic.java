@@ -9,6 +9,8 @@ import common.DownloadFileResult;
 import common.FileDirectoryResult;
 import common.FileResult;
 import common.LoginResult;
+import common.Note;
+import common.NoteResult;
 import common.RegisterResult;
 
 /**
@@ -66,4 +68,17 @@ public interface IBusinessLogic {
 	 * @return 下载内容
 	 */
 	public DownloadFileResult downloadFile(String fileID,String userID);
+	/**
+	 * 增加备注
+	 * @param note
+	 * @return 结果
+	 */
+	public NoteResult addNote(Note note);
+	/**
+	 * 删除备注
+	 * @param noteID
+	 * @param userID
+	 * @return 结果
+	 */
+	public NoteResult deleteNote(Note note,String userID);
 }

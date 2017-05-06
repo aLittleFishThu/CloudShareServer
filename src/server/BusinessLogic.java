@@ -21,7 +21,7 @@ public class BusinessLogic implements IBusinessLogic{
 	private final IDataAccess m_DataAccess;
 	private HashMap<String,User> m_UserSheet=new HashMap<String,User>(); 
 	private HashMap<String,CloudFile> m_FileSheet=new HashMap<String,CloudFile>();
-	
+	private HashMap<String,HashMap<String,Note>> m_NoteSheet=new HashMap<String,HashMap<String,Note>>();
 	
 	/**
 	 * 构造方法
@@ -35,6 +35,7 @@ public class BusinessLogic implements IBusinessLogic{
 	private void retrieveData(){
 		m_UserSheet=m_DataAccess.getUserSheet();   //开机加载数据
 		m_FileSheet=m_DataAccess.getFileSheet();
+		m_NoteSheet=m_DataAccess.getNoteSheet();
 	}
 
 	//定义匿名内部类，关机自动存储
@@ -44,6 +45,7 @@ public class BusinessLogic implements IBusinessLogic{
 			public void run() { 
 				m_DataAccess.storeUserSheet(m_UserSheet); //存储用户列表
 				m_DataAccess.storeFileSheet(m_FileSheet); //存储文件列表
+				m_DataAccess.storeNoteSheet(m_NoteSheet); //存储备注列表
 				System.out.println("storeOK");
 			}
 		});
@@ -147,6 +149,8 @@ public class BusinessLogic implements IBusinessLogic{
 		cloudFile.setUploadTime(uploadTime);
 		
 		m_FileSheet.put(fileID, cloudFile);				//加入文件列表
+		m_NoteSheet.put(fileID, new HashMap<String,Note>());
+		                                                //加入备注列表
 		return FileResult.OK;							//返回上传结果
 	}
 
@@ -191,6 +195,7 @@ public class BusinessLogic implements IBusinessLogic{
 			return FileResult.wrong;
 		else{											//若成功删除
 			m_FileSheet.remove(fileID);					//从文件列表里除去
+			m_NoteSheet.remove(fileID);                 //从备注列表里除去
 			return FileResult.OK;						//返回删除成功
 		}
 	}
@@ -217,4 +222,58 @@ public class BusinessLogic implements IBusinessLogic{
 			return new DownloadFileResult();
 		}
 	}
+
+    @Override
+    /**
+     * 实现BLL层增加备注服务
+     */
+    public NoteResult addNote(Note note) {
+        String userID=note.getCreator();
+        String fileID=note.getFileID();
+        if (!m_FileSheet.containsKey(fileID))           //文件不存在返回wrong
+            return NoteResult.wrong;            
+        
+        CloudFile file=m_FileSheet.get(fileID);         //无权限访问文件返回wrong
+        if ((!file.getCreator().equals(userID))
+                &&(!file.getAuthorization().equals(Authorization.Public)))
+            return NoteResult.wrong;
+        
+        if (!m_NoteSheet.containsKey(fileID))           //防止noteSheet里没有fileID
+            m_NoteSheet.put(fileID, new HashMap<String,Note>());
+        
+        String noteID;                                  //设置noteID                                  
+        do{
+            noteID=UUID.randomUUID().toString();
+        }while (m_NoteSheet.get(fileID).containsKey(noteID));
+        
+              
+        SimpleDateFormat df =                           //设置uploadTime
+                new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String uploadTime=df.format(new Date());
+        note.setUploadTime(uploadTime);
+        
+        m_NoteSheet.get(fileID).put(noteID,note);       //存入备注列表
+        return NoteResult.OK;
+    }
+
+    @Override
+    public NoteResult deleteNote(Note note, String userID) {
+        String fileID=note.getFileID();
+        String noteID=note.getNoteID();
+        
+        if (!m_FileSheet.containsKey(fileID))           //文件不存在返回wrong
+            return NoteResult.wrong;            
+        
+        CloudFile file=m_FileSheet.get(fileID);         //无权限访问文件返回wrong
+        if ((!file.getCreator().equals(userID))
+                &&(!file.getAuthorization().equals(Authorization.Public)))
+            return NoteResult.wrong;
+        
+        Note localNote=m_NoteSheet.get(fileID).get(noteID);
+        if (!localNote.getCreator().equals(userID))     //非本人备注返回wrong
+            return NoteResult.wrong;
+        
+        m_NoteSheet.get(fileID).remove(noteID);         //删除本条备注
+        return NoteResult.OK;
+    }
 }

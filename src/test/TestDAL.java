@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 import common.CloudFile;
+import common.Note;
 import common.User;
 import server.DataAccess;
 
@@ -25,5 +26,14 @@ public class TestDAL {
         dataAccess.storeUserFileSheet(sheet);*/
         HashMap<String,CloudFile> sheet3=dataAccess.getFileSheet();
         System.out.println(sheet3);
+        Note note=new Note("yzj","123");
+        HashMap<String,HashMap<String,Note>> noteSheet=new HashMap<String,HashMap<String,Note>>();
+        HashMap<String,Note> set=new HashMap<String,Note>();
+        set.put("123",note);
+        noteSheet.put("342", set);
+        dataAccess.storeNoteSheet(noteSheet);
+        HashMap<String,HashMap<String,Note>> sheet4=dataAccess.getNoteSheet();
+        System.out.println(sheet4);
+        System.out.println(note);
 	}
 }

@@ -58,4 +58,14 @@ public interface IDataAccess {
 	 * @throws IOException 
 	 */
 	public byte [] downloadFile(String fileID) throws FileNotFoundException, IOException;
+    /**
+     * 获取备注列表
+     * @return noteSheet
+     */
+    public HashMap<String,HashMap<String,Note>> getNoteSheet();
+    /**
+     * 存储备注列表
+     */
+    public void storeNoteSheet(HashMap<String,HashMap<String,Note>> noteSheet);	
+	
 }

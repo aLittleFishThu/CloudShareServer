@@ -83,12 +83,13 @@ public class FileHandler implements HttpHandler{
 		
 		JSONObject jsonResponse=new JSONObject();     
 		jsonResponse.put("status", result.getStatus()); //将修改结果包装为JSON对象
-		String response=jsonResponse.toString();        //转为字符串
+		byte[] response=jsonResponse.toString().getBytes("UTF-8");        
+		                                                //转为byte类型
 		
-		t.sendResponseHeaders(200, response.length());  //发送响应码Code
+		t.sendResponseHeaders(200, response.length);      //发送响应码Code
 		
 		OutputStream os = t.getResponseBody();          //返回上传结果写入响应Body
-		os.write(response.getBytes());
+		os.write(response);
 		os.close();       
 	}
 	
@@ -138,13 +139,14 @@ public class FileHandler implements HttpHandler{
 		
 		JSONObject jsonResponse=new JSONObject();     
 		jsonResponse.put("status", result.getStatus()); //将删除结果包装为JSON对象
-		String response=jsonResponse.toString();        //转为字符串
-		
-		t.sendResponseHeaders(200, response.length());  //发送响应码Code
-		
-		OutputStream os = t.getResponseBody();          //返回上传结果写入响应Body
-		os.write(response.getBytes());
-		os.close();       		
+        byte[] response=jsonResponse.toString().getBytes("UTF-8");        
+                                                        //转为byte类型
+
+        t.sendResponseHeaders(200, response.length);     //发送响应码Code
+        
+        OutputStream os = t.getResponseBody();          //返回上传结果写入响应Body
+        os.write(response);
+        os.close();       		
 	}
 	
 	private void handleRename(HttpExchange t,String userID){
