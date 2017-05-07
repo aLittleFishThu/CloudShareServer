@@ -4,9 +4,9 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.UUID;
 import java.util.Map.Entry;
@@ -166,7 +166,7 @@ public class BusinessLogic implements IBusinessLogic{
 		if (!m_UserSheet.containsKey(targetID))				//目标用户不存在直接返回wrong
 			return new FileDirectoryResult(FileResult.wrong);
 		
-		HashSet<CloudFile> fileDirectory=new HashSet<CloudFile>(); //遍历文件列表
+		ArrayList<CloudFile> fileDirectory=new ArrayList<CloudFile>(); //遍历文件列表
 		Iterator<Entry<String,CloudFile>> iter=m_FileSheet.entrySet().iterator();
 		while (iter.hasNext()){
 			CloudFile aFile=iter.next().getValue();

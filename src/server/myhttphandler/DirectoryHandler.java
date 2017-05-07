@@ -3,8 +3,7 @@ package server.myhttphandler;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URI;
-import java.util.HashSet;
-
+import java.util.ArrayList;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -68,7 +67,7 @@ public class DirectoryHandler implements HttpHandler{
 														  //调用接口
 		FileDirectoryResult directoryResult=m_Business.getDirectory(targetID, userID);
 		String status=directoryResult.getResult().getStatus();
-		HashSet<CloudFile> directory=directoryResult.getFileDirectory();
+		ArrayList<CloudFile> directory=directoryResult.getFileDirectory();
 		
 		JSONArray directoryArray=new JSONArray(directory);
 		JSONObject jsonResponse=new JSONObject();     
