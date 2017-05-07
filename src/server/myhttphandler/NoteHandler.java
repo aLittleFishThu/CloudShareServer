@@ -16,7 +16,6 @@ import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
-import common.FileResult;
 import common.Note;
 import common.NoteResult;
 

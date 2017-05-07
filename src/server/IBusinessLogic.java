@@ -5,13 +5,14 @@ import java.io.InputStream;
 import common.ChangePasswdResult;
 import common.CloudFile;
 import common.Credential;
+import common.DeleteFileResult;
 import common.DownloadFileResult;
 import common.FileDirectoryResult;
-import common.FileResult;
 import common.LoginResult;
 import common.Note;
 import common.NoteResult;
 import common.RegisterResult;
+import common.UploadFileResult;
 
 /**
  * 服务器端BLL提供接口
@@ -46,7 +47,7 @@ public interface IBusinessLogic {
 	 * @param content
 	 * @return 上传结果
 	 */
-	public FileResult uploadFile(CloudFile cloudFile, InputStream content);
+	public UploadFileResult uploadFile(CloudFile cloudFile, InputStream content);
 	/**
 	 * 获取指定用户文件目录
 	 * @param targetID 目标用户
@@ -60,7 +61,7 @@ public interface IBusinessLogic {
 	 * @param userID
 	 * @return 删除结果（成功删除为OK，文件不存在或无权限为wrong）
 	 */
-	public FileResult deleteFile(String fileID,String userID);
+	public DeleteFileResult deleteFile(String fileID,String userID);
 	/**
 	 * 下载指定文件
 	 * @param fileID

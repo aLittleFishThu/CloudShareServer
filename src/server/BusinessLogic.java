@@ -12,6 +12,8 @@ import java.util.UUID;
 import java.util.Map.Entry;
 
 import common.*;
+import common.DownloadFileResult.DownloadFileStatus;
+import common.FileDirectoryResult.FileDirectoryStatus;
 
 /**
  * 服务器端BLL层
@@ -123,7 +125,7 @@ public class BusinessLogic implements IBusinessLogic{
 	 * @param InputStream content
 	 * 调用DAL接口，并生成fileID，在两个列表里新增内容
 	 */
-	public FileResult uploadFile(CloudFile cloudFile, InputStream content) {
+	public UploadFileResult uploadFile(CloudFile cloudFile, InputStream content) {
 		String filename=cloudFile.getFilename();        //替换该用户的重名文件
 		String creator=cloudFile.getCreator();         
 		Iterator<Entry<String,CloudFile>> iter=m_FileSheet.entrySet().iterator();
@@ -132,7 +134,7 @@ public class BusinessLogic implements IBusinessLogic{
 			if (aFile.getFilename().equals(filename)&&
 					aFile.getCreator().equals(creator)){
 			    m_DataAccess.uploadFile(aFile.getFileID(), content);
-				return FileResult.OK;
+				return UploadFileResult.OK;
 			}
 		}
 	
@@ -151,7 +153,7 @@ public class BusinessLogic implements IBusinessLogic{
 		m_FileSheet.put(fileID, cloudFile);				//加入文件列表
 		m_NoteSheet.put(fileID, new HashMap<String,Note>());
 		                                                //加入备注列表
-		return FileResult.OK;							//返回上传结果
+		return UploadFileResult.OK;						//返回上传结果
 	}
 
 	
@@ -164,7 +166,7 @@ public class BusinessLogic implements IBusinessLogic{
 	 */
 	public FileDirectoryResult getDirectory(String targetID, String userID) {
 		if (!m_UserSheet.containsKey(targetID))				//目标用户不存在直接返回wrong
-			return new FileDirectoryResult(FileResult.wrong);
+			return new FileDirectoryResult(FileDirectoryStatus.wrong);
 		
 		ArrayList<CloudFile> fileDirectory=new ArrayList<CloudFile>(); //遍历文件列表
 		Iterator<Entry<String,CloudFile>> iter=m_FileSheet.entrySet().iterator();
@@ -177,7 +179,7 @@ public class BusinessLogic implements IBusinessLogic{
 				}
 			}
 		}
-		return new FileDirectoryResult(fileDirectory,FileResult.OK);  //返回结果给上层
+		return new FileDirectoryResult(fileDirectory,FileDirectoryStatus.OK);  //返回结果给上层
 	}
 
 	@Override
@@ -187,16 +189,16 @@ public class BusinessLogic implements IBusinessLogic{
 	 * @param userID
 	 * @return FileResult
 	 */
-	public FileResult deleteFile(String fileID, String userID) {
+	public DeleteFileResult deleteFile(String fileID, String userID) {
 		CloudFile cloudFile=m_FileSheet.get(fileID);	//检查权限
 		if (!cloudFile.getCreator().equals(userID))
-			return FileResult.wrong;
+			return DeleteFileResult.wrong;
 		if (!m_DataAccess.deleteFile(fileID))			//检查是否成功删除
-			return FileResult.wrong;
+			return DeleteFileResult.wrong;
 		else{											//若成功删除
 			m_FileSheet.remove(fileID);					//从文件列表里除去
 			m_NoteSheet.remove(fileID);                 //从备注列表里除去
-			return FileResult.OK;						//返回删除成功
+			return DeleteFileResult.OK;					//返回删除成功
 		}
 	}
 
@@ -215,7 +217,7 @@ public class BusinessLogic implements IBusinessLogic{
 			return new DownloadFileResult();
 		try {
 			byte[] content = m_DataAccess.downloadFile(fileID);
-			return new DownloadFileResult(content,FileResult.OK);
+			return new DownloadFileResult(content,DownloadFileStatus.OK);
 		} catch (FileNotFoundException e) {
 			return new DownloadFileResult();
 		} catch (IOException e) {

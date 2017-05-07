@@ -15,8 +15,10 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
 import common.CloudFile;
+import common.DeleteFileResult;
 import common.DownloadFileResult;
-import common.FileResult;
+import common.DownloadFileResult.DownloadFileStatus;
+import common.UploadFileResult;
 
 public class FileHandler implements HttpHandler{
 	private final IBusinessLogic m_Business;
@@ -72,7 +74,7 @@ public class FileHandler implements HttpHandler{
 		}
 		CloudFile cloudFile=new CloudFile(userID,filename);
 		InputStream content=t.getRequestBody();         //获取文件内容
-		FileResult result=m_Business.uploadFile(cloudFile, content);   
+		UploadFileResult result=m_Business.uploadFile(cloudFile, content);   
 														//进行上传文件操作
 		
 		/**
@@ -109,7 +111,7 @@ public class FileHandler implements HttpHandler{
 		/**
 		 * 发送响应信息
 		 */
-		if (result.getResult().equals(FileResult.wrong))//资源不存在，返回403
+		if (result.getResult().equals(DownloadFileStatus.wrong))//资源不存在，返回403
 			t.sendResponseHeaders(403, -1);
 		t.sendResponseHeaders(200, 0);					//发送响应码
 	    byte[] content=result.getContent();
@@ -128,7 +130,7 @@ public class FileHandler implements HttpHandler{
 			t.sendResponseHeaders(400, -1);
 			return;
 		}
-		FileResult result=m_Business.deleteFile(fileID,userID);
+		DeleteFileResult result=m_Business.deleteFile(fileID,userID);
 														//进行删除文件操作     
 														
 		/**
