@@ -76,7 +76,7 @@ public interface IBusinessLogic {
 	public NoteResult addNote(Note note);
 	/**
 	 * É¾³ý±¸×¢
-	 * @param noteID
+	 * @param note, including noteID and fileID
 	 * @param userID
 	 * @return ½á¹û
 	 */
