@@ -14,6 +14,7 @@ import common.LoginResult;
 import common.Note;
 import common.NoteListResult;
 import common.RegisterResult;
+import common.RenameFileResult;
 import common.UploadFileResult;
 
 /**
@@ -71,6 +72,14 @@ public interface IBusinessLogic {
 	 * @return 下载内容
 	 */
 	public DownloadFileResult downloadFile(String fileID,String userID);
+	/**
+	 * 重命名指定文件
+	 * @param fileID
+	 * @param newFilename
+	 * @param userID
+	 * @return 重命名结果
+	 */
+	public RenameFileResult renameFile(String fileID,String newFilename,String userID);
 	/**
 	 * 增加备注
 	 * @param note

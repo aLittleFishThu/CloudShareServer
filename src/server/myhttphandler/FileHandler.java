@@ -5,6 +5,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
 
+import org.apache.commons.io.IOUtils;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import server.IBusinessLogic;
@@ -14,10 +16,13 @@ import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
+import common.ChangePasswdResult;
 import common.CloudFile;
+import common.Credential;
 import common.DeleteFileResult;
 import common.DownloadFileResult;
 import common.DownloadFileResult.DownloadFileStatus;
+import common.RenameFileResult;
 import common.UploadFileResult;
 
 public class FileHandler implements HttpHandler{
@@ -48,7 +53,7 @@ public class FileHandler implements HttpHandler{
 		if (requestMethod.equals("POST")){         	
 			if (HttpFormUtil.judgeContentType(requestHeader, "application/json"))
 				handleRename(t,userID);					//POST+JSON: Rename
-			else 
+			else
 				handleUpload(t,userID);					//POST+file：upload
 		}
 		else if (requestMethod.equals("GET")){			//GET:download
@@ -151,7 +156,47 @@ public class FileHandler implements HttpHandler{
         os.close();       		
 	}
 	
-	private void handleRename(HttpExchange t,String userID){
-
+	private void handleRename(HttpExchange t,String userID) throws IOException{
+        /**
+         * 获取fileID，调用接口
+         */
+        URI uri=t.getRequestURI();                      //获取URI
+        String fileID=HttpFormUtil.getQueryParameter(uri, "fileID");
+        if (fileID==null){                              //获取参数
+            t.sendResponseHeaders(400, -1);
+            return;
+        }
+        
+        InputStream in=t.getRequestBody();                      //获取Body
+        String requestBody=IOUtils.toString(in,"UTF-8"); 
+        in.close(); 
+        JSONObject jsonRequest;                                 //解析Body
+        try{
+            jsonRequest=new JSONObject(requestBody);            //JSON对象转为String
+            String newFilename=jsonRequest.getString("newFilename");  
+            
+            RenameFileResult result=m_Business.renameFile(fileID,newFilename,userID);   
+                                                                //进行重命名操作
+            
+            Headers h=t.getResponseHeaders();                   //设置响应头Header
+            h.add("Content-Type","application/json");           //Content-Type加入响应头
+            
+            JSONObject jsonResponse=new JSONObject();     
+            jsonResponse.put("status", result.getStatus());     //将重命名结果包装为JSON对象
+            byte[] response=jsonResponse.toString().getBytes("UTF-8");   
+                                                                //转为byte类型
+            
+            
+            t.sendResponseHeaders(200, response.length);        //发送响应码Code
+            
+            OutputStream os = t.getResponseBody();            //返回结果写入响应Body
+            os.write(response);
+            os.close();                                       
+            
+        }catch (JSONException e){
+            t.sendResponseHeaders(400, -1);                 //JSON对象格式错误
+            return;
+        }
+        
 	}
 }

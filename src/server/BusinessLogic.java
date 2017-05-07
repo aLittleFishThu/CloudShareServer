@@ -302,4 +302,23 @@ public class BusinessLogic implements IBusinessLogic{
         ArrayList<Note> noteList=new ArrayList<Note>(m_NoteSheet.get(fileID).values());
         return new NoteListResult(noteList,NoteListStatus.OK);  //返回结果给上层
     }
+
+    @Override
+    public RenameFileResult renameFile(String fileID, String newFilename,String userID){
+       if (!m_FileSheet.containsKey(fileID))                        //文件不存在
+           return RenameFileResult.wrong;
+       
+       if (!m_FileSheet.get(fileID).getCreator().equals(userID))    //非本人文件
+           return RenameFileResult.wrong;
+       
+       ArrayList<CloudFile> directory=getDirectory(userID,userID).getFileDirectory();
+       for (CloudFile aFile:directory){                             //与其他文件重名
+           if ((aFile.getFilename().equals(newFilename))&&
+                   !aFile.getFileID().equals(fileID))
+               return RenameFileResult.repeatedName;
+       }
+       
+       m_FileSheet.get(fileID).setFilename(newFilename);            //重命名成功返回OK
+       return RenameFileResult.OK;
+    }
 }
