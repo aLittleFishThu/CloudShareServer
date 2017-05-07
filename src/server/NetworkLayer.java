@@ -28,6 +28,7 @@ public class NetworkLayer implements INetworkLayer{
 	private FileHandler fileHandler;
 	private DirectoryHandler directoryHandler;
 	private NoteHandler noteHandler;
+	private NoteListHandler noteListHandler;
 	
 	/**
 	 * 构造方法
@@ -42,6 +43,7 @@ public class NetworkLayer implements INetworkLayer{
 		fileHandler=new FileHandler(m_Business,m_Session);
 		directoryHandler=new DirectoryHandler(m_Business,m_Session);
 		noteHandler=new NoteHandler(m_Business,m_Session);
+		noteListHandler=new NoteListHandler(m_Business,m_Session);
 	}
 	/**
 	 * 启动服务器
@@ -56,6 +58,7 @@ public class NetworkLayer implements INetworkLayer{
 		server.createContext("/cloudshare/file",fileHandler);			//文件操作
 		server.createContext("/cloudshare/getDirectory",directoryHandler); //获取目录
 		server.createContext("/cloudshare/note",noteHandler);           //备注操作
+		server.createContext("/cloudshare/getNoteList",noteListHandler);  //获取备注列表
 		server.setExecutor(java.util.concurrent.Executors.newCachedThreadPool());  //线程池
 		server.start(); //启动服务器
 	}

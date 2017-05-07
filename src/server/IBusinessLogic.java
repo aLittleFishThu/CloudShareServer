@@ -12,6 +12,7 @@ import common.DownloadFileResult;
 import common.FileDirectoryResult;
 import common.LoginResult;
 import common.Note;
+import common.NoteListResult;
 import common.RegisterResult;
 import common.UploadFileResult;
 
@@ -83,4 +84,11 @@ public interface IBusinessLogic {
 	 * @return 结果
 	 */
 	public DeleteNoteResult deleteNote(Note note,String userID);
+	/**
+	 * 获取指定文件的备注列表
+	 * @param fileID
+	 * @param userID
+	 * @return 结果
+	 */
+	public NoteListResult getNoteList(String fileID,String userID);
 }

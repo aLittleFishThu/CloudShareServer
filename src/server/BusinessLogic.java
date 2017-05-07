@@ -14,6 +14,7 @@ import java.util.Map.Entry;
 import common.*;
 import common.DownloadFileResult.DownloadFileStatus;
 import common.FileDirectoryResult.FileDirectoryStatus;
+import common.NoteListResult.NoteListStatus;
 
 /**
  * 服务器端BLL层
@@ -219,6 +220,8 @@ public class BusinessLogic implements IBusinessLogic{
 			byte[] content = m_DataAccess.downloadFile(fileID);
 			return new DownloadFileResult(content,DownloadFileStatus.OK);
 		} catch (FileNotFoundException e) {
+		    m_FileSheet.remove(fileID);               //若FileSheet内存在但磁盘不存在，除去该条
+		    m_NoteSheet.remove(fileID);
 			return new DownloadFileResult();
 		} catch (IOException e) {
 			return new DownloadFileResult();
@@ -247,7 +250,7 @@ public class BusinessLogic implements IBusinessLogic{
         do{
             noteID=UUID.randomUUID().toString();
         }while (m_NoteSheet.get(fileID).containsKey(noteID));
-        
+        note.setNoteID(noteID);
               
         SimpleDateFormat df =                           //设置uploadTime
                 new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -280,5 +283,23 @@ public class BusinessLogic implements IBusinessLogic{
         
         m_NoteSheet.get(fileID).remove(noteID);         //删除本条备注
         return DeleteNoteResult.OK;
+    }
+
+    @Override
+    public NoteListResult getNoteList(String fileID, String userID) {
+        if (!m_FileSheet.containsKey(fileID))           //检查文件是否存在
+            return new NoteListResult();
+        if (!m_NoteSheet.containsKey(fileID)){          //若文件存在但备注列表不存在则为bug，修复一下
+            m_NoteSheet.put(fileID, new HashMap<String,Note>());
+            return new NoteListResult();
+        }
+            
+        CloudFile cloudFile=m_FileSheet.get(fileID);
+        if ((!cloudFile.getCreator().equals(userID))&&  //检查是否有权限
+            (cloudFile.getAuthorization().equals(Authorization.Private)))
+            return new NoteListResult();
+       
+        ArrayList<Note> noteList=new ArrayList<Note>(m_NoteSheet.get(fileID).values());
+        return new NoteListResult(noteList,NoteListStatus.OK);  //返回结果给上层
     }
 }
