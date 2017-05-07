@@ -229,16 +229,16 @@ public class BusinessLogic implements IBusinessLogic{
     /**
      * 实现BLL层增加备注服务
      */
-    public NoteResult addNote(Note note) {
+    public AddNoteResult addNote(Note note) {
         String userID=note.getCreator();
         String fileID=note.getFileID();
         if (!m_FileSheet.containsKey(fileID))           //文件不存在返回wrong
-            return NoteResult.wrong;            
+            return AddNoteResult.wrong;            
         
         CloudFile file=m_FileSheet.get(fileID);         //无权限访问文件返回wrong
         if ((!file.getCreator().equals(userID))
                 &&(!file.getAuthorization().equals(Authorization.Public)))
-            return NoteResult.wrong;
+            return AddNoteResult.wrong;
         
         if (!m_NoteSheet.containsKey(fileID))           //防止noteSheet里没有fileID
             m_NoteSheet.put(fileID, new HashMap<String,Note>());
@@ -255,27 +255,30 @@ public class BusinessLogic implements IBusinessLogic{
         note.setUploadTime(uploadTime);
         
         m_NoteSheet.get(fileID).put(noteID,note);       //存入备注列表
-        return NoteResult.OK;
+        return AddNoteResult.OK;
     }
 
     @Override
-    public NoteResult deleteNote(Note note, String userID) {
+    public DeleteNoteResult deleteNote(Note note, String userID) {
         String fileID=note.getFileID();
         String noteID=note.getNoteID();
         
         if (!m_FileSheet.containsKey(fileID))           //文件不存在返回wrong
-            return NoteResult.wrong;            
+            return DeleteNoteResult.wrong;            
         
         CloudFile file=m_FileSheet.get(fileID);         //无权限访问文件返回wrong
         if ((!file.getCreator().equals(userID))
                 &&(!file.getAuthorization().equals(Authorization.Public)))
-            return NoteResult.wrong;
+            return DeleteNoteResult.wrong;
+        
+        if (!m_NoteSheet.get(fileID).containsKey(noteID))
+            return DeleteNoteResult.wrong;              //备注不存在返回wrong
         
         Note localNote=m_NoteSheet.get(fileID).get(noteID);
         if (!localNote.getCreator().equals(userID))     //非本人备注返回wrong
-            return NoteResult.wrong;
+            return DeleteNoteResult.wrong;
         
         m_NoteSheet.get(fileID).remove(noteID);         //删除本条备注
-        return NoteResult.OK;
+        return DeleteNoteResult.OK;
     }
 }

@@ -2,15 +2,16 @@ package server;
 
 import java.io.InputStream;
 
+import common.AddNoteResult;
 import common.ChangePasswdResult;
 import common.CloudFile;
 import common.Credential;
 import common.DeleteFileResult;
+import common.DeleteNoteResult;
 import common.DownloadFileResult;
 import common.FileDirectoryResult;
 import common.LoginResult;
 import common.Note;
-import common.NoteResult;
 import common.RegisterResult;
 import common.UploadFileResult;
 
@@ -74,12 +75,12 @@ public interface IBusinessLogic {
 	 * @param note
 	 * @return 结果
 	 */
-	public NoteResult addNote(Note note);
+	public AddNoteResult addNote(Note note);
 	/**
 	 * 删除备注
 	 * @param note, including noteID and fileID
 	 * @param userID
 	 * @return 结果
 	 */
-	public NoteResult deleteNote(Note note,String userID);
+	public DeleteNoteResult deleteNote(Note note,String userID);
 }

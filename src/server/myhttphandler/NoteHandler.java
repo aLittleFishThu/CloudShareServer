@@ -16,8 +16,9 @@ import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
+import common.AddNoteResult;
+import common.DeleteNoteResult;
 import common.Note;
-import common.NoteResult;
 
 public class NoteHandler implements HttpHandler{
 	private final IBusinessLogic m_Business;
@@ -71,7 +72,7 @@ public class NoteHandler implements HttpHandler{
             String fileID=jsonRequest.getString("fileID"); 
             
             Note note=new Note(content,fileID,userID);          //将JSON对象转换为java对象
-            NoteResult result=m_Business.addNote(note);         //进行增加备注操作                                                
+            AddNoteResult result=m_Business.addNote(note);         //进行增加备注操作                                                
             
             Headers h=t.getResponseHeaders();                   //设置响应头Header
             h.add("Content-Type","application/json");           //Content-Type加入响应头
@@ -109,7 +110,7 @@ public class NoteHandler implements HttpHandler{
         Note note=new Note();
         note.setNoteID(noteID);
         note.setFileID(fileID);
-        NoteResult result=m_Business.deleteNote(note,userID);
+        DeleteNoteResult result=m_Business.deleteNote(note,userID);
                                                         //进行删除备注操作     
                                                         
         /**
