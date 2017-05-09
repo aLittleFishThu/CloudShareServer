@@ -20,7 +20,7 @@ import server.IBusinessLogic;
 import server.ISession;
 
 /**
- * ·şÎñÆ÷¶ËÏìÓ¦LoginÒªÇó
+ * æœåŠ¡å™¨ç«¯å“åº”Loginè¦æ±‚
  * @author yzj
  */
 
@@ -34,50 +34,50 @@ public class LoginHandler implements HttpHandler{
 	}
 
 	public void handle(HttpExchange t) throws IOException {
-		String requestMethod=t.getRequestMethod();  //»ñÈ¡Method
-		if (!requestMethod.equals("POST")){         //ÅĞ¶ÏMethodÊÇ·ñÕıÈ·
+		String requestMethod=t.getRequestMethod();  //è·å–Method
+		if (!requestMethod.equals("POST")){         //åˆ¤æ–­Methodæ˜¯å¦æ­£ç¡®
 			t.sendResponseHeaders(400, -1);         
 			return;
 		}
 		
-		Headers requestHeader=t.getRequestHeaders();   	//»ñÈ¡Header
+		Headers requestHeader=t.getRequestHeaders();   	//è·å–Header
 		if (!HttpFormUtil.judgeContentType(requestHeader, "application/json")){ 
 			t.sendResponseHeaders(400, -1);
 			return;
 		}
 		
-		InputStream in=t.getRequestBody();                      //»ñÈ¡Body
+		InputStream in=t.getRequestBody();                      //è·å–Body
 		String requestBody=IOUtils.toString(in,"UTF-8"); 
 		in.close();				
 		
-		JSONObject jsonRequest;									//½âÎöBody
+		JSONObject jsonRequest;									//è§£æBody
 		try{
 			jsonRequest=new JSONObject(requestBody);
 			String userID=jsonRequest.getString("userID");
 			String password=jsonRequest.getString("password");  
-			Credential cred=new Credential(userID,password);    //½«JSON¶ÔÏó×ª»»Îªjava¶ÔÏó
-			LoginResult result=m_Business.login(cred);          //½øĞĞÉí·İÑéÖ¤
+			Credential cred=new Credential(userID,password);    //å°†JSONå¯¹è±¡è½¬æ¢ä¸ºjavaå¯¹è±¡
+			LoginResult result=m_Business.login(cred);          //è¿›è¡Œèº«ä»½éªŒè¯
 			
-			Headers h=t.getResponseHeaders();                   //ÉèÖÃÏìÓ¦Í·Header
-			h.add("Content-Type","application/json");           //Content-Type¼ÓÈëÏìÓ¦Í·
-			if (result.equals(LoginResult.OK)){                 //ÈôÉí·İÑéÖ¤Í¨¹ı
-				String sessionID=m_Session.createSession(cred); //»ñÈ¡sessionID£¬×÷Îªcookie
-				h.add("Set-Cookie", "sessionID="+sessionID);    //Cookie¼ÓÈëÏìÓ¦Í·
+			Headers h=t.getResponseHeaders();                   //è®¾ç½®å“åº”å¤´Header
+			h.add("Content-Type","application/json");           //Content-TypeåŠ å…¥å“åº”å¤´
+			if (result.equals(LoginResult.OK)){                 //è‹¥èº«ä»½éªŒè¯é€šè¿‡
+				String sessionID=m_Session.createSession(cred); //è·å–sessionIDï¼Œä½œä¸ºcookie
+				h.add("Set-Cookie", "sessionID="+sessionID);    //CookieåŠ å…¥å“åº”å¤´
 			}
 			
 			JSONObject jsonResponse=new JSONObject();     
-			jsonResponse.put("status", result.getStatus());   //½«µÇÂ¼½á¹û°ü×°ÎªJSON¶ÔÏó
+			jsonResponse.put("status", result.getStatus());   //å°†ç™»å½•ç»“æœåŒ…è£…ä¸ºJSONå¯¹è±¡
 		    byte[] response=jsonResponse.toString().getBytes("UTF-8");        
-                                                              //×ªÎªbyteÀàĞÍ
+                                                              //è½¬ä¸ºbyteç±»å‹
 
-            t.sendResponseHeaders(200, response.length);      //·¢ËÍÏìÓ¦ÂëCode
+            t.sendResponseHeaders(200, response.length);      //å‘é€å“åº”ç Code
             
-            OutputStream os = t.getResponseBody();            //·µ»ØÉÏ´«½á¹ûĞ´ÈëÏìÓ¦Body
+            OutputStream os = t.getResponseBody();            //è¿”å›ä¸Šä¼ ç»“æœå†™å…¥å“åº”Body
             os.write(response);
             os.close();                                            
 			
 		}catch (JSONException e){
-			t.sendResponseHeaders(400, -1);     //JSON¶ÔÏó¸ñÊ½´íÎó
+			t.sendResponseHeaders(400, -1);     //JSONå¯¹è±¡æ ¼å¼é”™è¯¯
 			return;
 		}
 	}

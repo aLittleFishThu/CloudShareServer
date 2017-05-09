@@ -3,6 +3,7 @@ package server.myhttphandler;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URI;
 
 import org.apache.commons.io.IOUtils;
 import org.json.JSONException;
@@ -17,15 +18,22 @@ import com.sun.net.httpserver.HttpHandler;
 
 
 
+
+
+
+
+import common.Authorization;
+import common.AuthorizationResult;
 import common.Credential;
 import common.ChangePasswdResult;
+import common.RenameFileResult;
 
 
-public class ChangePasswdHandler implements HttpHandler{
+public class AuthorizationHandler implements HttpHandler{
 	private final IBusinessLogic m_Business;
 	private final ISession m_Session;
 	
-	public ChangePasswdHandler(IBusinessLogic business,ISession session){
+	public AuthorizationHandler(IBusinessLogic business,ISession session){
 		m_Business=business;
 		m_Session=session;
 	}
@@ -60,6 +68,13 @@ public class ChangePasswdHandler implements HttpHandler{
 		/**
 		 * 以下进行Body解析及发送响应内容
 		 */
+    	URI uri=t.getRequestURI();                           //获取URI
+        String fileID=HttpFormUtil.getQueryParameter(uri, "fileID");
+        if (fileID==null){                                   //获取参数
+             t.sendResponseHeaders(400, -1);
+             return;
+        }
+        
 		InputStream in=t.getRequestBody();                      //获取Body
 		String requestBody=IOUtils.toString(in,"UTF-8"); 
 		in.close();				
@@ -67,12 +82,16 @@ public class ChangePasswdHandler implements HttpHandler{
 		JSONObject jsonRequest;									//解析Body
 		try{
 			jsonRequest=new JSONObject(requestBody);
-			String password=jsonRequest.getString("password");  
-			String newpassword=jsonRequest.getString("newPassword");
-			
-			Credential cred=new Credential(userID,password);    //将JSON对象转换为java对象
-			ChangePasswdResult result=m_Business.changePasswd(cred, newpassword);   
-																//进行修改密码操作
+			String authorization=jsonRequest.getString("authorization"); 
+			AuthorizationResult result;
+			if (authorization.equalsIgnoreCase("self"))
+			    result=m_Business.setAuthorization(fileID, userID, false);
+			else if (authorization.equalsIgnoreCase("open"))
+			    result=m_Business.setAuthorization(fileID, userID, true);
+			else{
+			    t.sendResponseHeaders(400, -1);
+			    return;
+			}
 			
 			Headers h=t.getResponseHeaders();                   //设置响应头Header
 			h.add("Content-Type","application/json");           //Content-Type加入响应头
@@ -81,7 +100,6 @@ public class ChangePasswdHandler implements HttpHandler{
 			jsonResponse.put("status", result.getStatus());   //将修改结果包装为JSON对象
 			byte[] response=jsonResponse.toString().getBytes("UTF-8");   
 			                                                    //转为byte类型
-			
 			
 			t.sendResponseHeaders(200, response.length);    //发送响应码Code
 			

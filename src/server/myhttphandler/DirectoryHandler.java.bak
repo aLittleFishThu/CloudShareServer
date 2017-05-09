@@ -1,10 +1,9 @@
-package server.myhttphandler;
+﻿package server.myhttphandler;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URI;
 import java.util.ArrayList;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -15,14 +14,14 @@ import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
-import common.Note;
-import common.NoteListResult;
+import common.CloudFile;
+import common.FileDirectoryResult;
 
-public class NoteListHandler implements HttpHandler{
+public class DirectoryHandler implements HttpHandler{
 	private final IBusinessLogic m_Business;
 	private final ISession m_Session;
 	
-	public NoteListHandler(IBusinessLogic business,ISession session){
+	public DirectoryHandler(IBusinessLogic business,ISession session){
 		m_Business=business;
 		m_Session=session;
 	}
@@ -53,8 +52,8 @@ public class NoteListHandler implements HttpHandler{
 		 * 以下进行参数提取
 		 */
 		URI uri=t.getRequestURI();						//获取URI
-		String fileID=HttpFormUtil.getQueryParameter(uri, "fileID");
-		if (fileID==null){  							//获取参数
+		String targetID=HttpFormUtil.getQueryParameter(uri, "targetID");
+		if (targetID==null){  							//获取参数
 			t.sendResponseHeaders(400,-1);				//格式错误返回400
 			return;
 		}
@@ -66,14 +65,14 @@ public class NoteListHandler implements HttpHandler{
 		h.add("Content-Type","application/json");         //Content-Type加入响应头
 		
 														  //调用接口
-		NoteListResult noteListResult=m_Business.getNoteList(fileID, userID);
-		String status=noteListResult.getResult().getStatus();
-		ArrayList<Note> noteList=noteListResult.getNoteList();
+		FileDirectoryResult directoryResult=m_Business.getDirectory(targetID, userID);
+		String status=directoryResult.getResult().getStatus();
+		ArrayList<CloudFile> directory=directoryResult.getFileDirectory();
 		
-		JSONArray noteListArray=new JSONArray(noteList);
+		JSONArray directoryArray=new JSONArray(directory);
 		JSONObject jsonResponse=new JSONObject();     
 		jsonResponse.put("status", status);				  //将结果包装为JSON对象
-		jsonResponse.put("noteList", noteListArray);   
+		jsonResponse.put("directory", directoryArray);   
 		byte[] response=jsonResponse.toString().getBytes("UTF-8");
 		
 		t.sendResponseHeaders(200, response.length);    //发送响应码Code

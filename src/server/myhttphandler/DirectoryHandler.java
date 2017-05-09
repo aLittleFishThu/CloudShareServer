@@ -29,55 +29,55 @@ public class DirectoryHandler implements HttpHandler{
 	@Override
 	public void handle(HttpExchange t) throws IOException {
 		/**
-		 * ÒÔÏÂ½øĞĞMethodÅĞ¶Ï
+		 * ä»¥ä¸‹è¿›è¡ŒMethodåˆ¤æ–­
 		 */
-		String requestMethod=t.getRequestMethod();  //»ñÈ¡Method
-		if (!requestMethod.equals("GET")){         	//ÅĞ¶ÏMethodÊÇ·ñÕıÈ·
+		String requestMethod=t.getRequestMethod();  //è·å–Method
+		if (!requestMethod.equals("GET")){         	//åˆ¤æ–­Methodæ˜¯å¦æ­£ç¡®
 			t.sendResponseHeaders(400, -1);         
 			return;
 		}
 		
 		/**
-		 * ÒÔÏÂ½øĞĞCookieÅĞ¶Ï
+		 * ä»¥ä¸‹è¿›è¡ŒCookieåˆ¤æ–­
 		 */
 	/*	Headers requestHeader=t.getRequestHeaders();
 		String sessionID=HttpFormUtil.getCookie(requestHeader);
-		String userID=m_Session.getUserID(sessionID);       //¸ù¾İsessionIDÈ¡³öuserID
-		if (userID==null){									//sessionIDÎŞĞ§Ôò·µ»Ø403
+		String userID=m_Session.getUserID(sessionID);       //æ ¹æ®sessionIDå–å‡ºuserID
+		if (userID==null){									//sessionIDæ— æ•ˆåˆ™è¿”å›403
 			t.sendResponseHeaders(401, -1);
 			return;
 		}*/
 		String userID="yzj";
 		/**
-		 * ÒÔÏÂ½øĞĞ²ÎÊıÌáÈ¡
+		 * ä»¥ä¸‹è¿›è¡Œå‚æ•°æå–
 		 */
-		URI uri=t.getRequestURI();						//»ñÈ¡URI
+		URI uri=t.getRequestURI();						//è·å–URI
 		String targetID=HttpFormUtil.getQueryParameter(uri, "targetID");
-		if (targetID==null){  							//»ñÈ¡²ÎÊı
-			t.sendResponseHeaders(400,-1);				//¸ñÊ½´íÎó·µ»Ø400
+		if (targetID==null){  							//è·å–å‚æ•°
+			t.sendResponseHeaders(400,-1);				//æ ¼å¼é”™è¯¯è¿”å›400
 			return;
 		}
 		
 		/**
-		 * µ÷ÓÃBLL²ã½Ó¿Ú²¢·µ»Ø½á¹û
+		 * è°ƒç”¨BLLå±‚æ¥å£å¹¶è¿”å›ç»“æœ
 		 */
-		Headers h=t.getResponseHeaders();                 //ÉèÖÃÏìÓ¦Í·Header
-		h.add("Content-Type","application/json");         //Content-Type¼ÓÈëÏìÓ¦Í·
+		Headers h=t.getResponseHeaders();                 //è®¾ç½®å“åº”å¤´Header
+		h.add("Content-Type","application/json");         //Content-TypeåŠ å…¥å“åº”å¤´
 		
-														  //µ÷ÓÃ½Ó¿Ú
+														  //è°ƒç”¨æ¥å£
 		FileDirectoryResult directoryResult=m_Business.getDirectory(targetID, userID);
 		String status=directoryResult.getResult().getStatus();
 		ArrayList<CloudFile> directory=directoryResult.getFileDirectory();
 		
 		JSONArray directoryArray=new JSONArray(directory);
 		JSONObject jsonResponse=new JSONObject();     
-		jsonResponse.put("status", status);				  //½«½á¹û°ü×°ÎªJSON¶ÔÏó
+		jsonResponse.put("status", status);				  //å°†ç»“æœåŒ…è£…ä¸ºJSONå¯¹è±¡
 		jsonResponse.put("directory", directoryArray);   
 		byte[] response=jsonResponse.toString().getBytes("UTF-8");
 		
-		t.sendResponseHeaders(200, response.length);    //·¢ËÍÏìÓ¦ÂëCode
+		t.sendResponseHeaders(200, response.length);    //å‘é€å“åº”ç Code
 		
-		OutputStream os = t.getResponseBody();            //·µ»Ø½á¹ûĞ´ÈëÏìÓ¦Body
+		OutputStream os = t.getResponseBody();            //è¿”å›ç»“æœå†™å…¥å“åº”Body
         os.write(response);
         os.close();               
 	}
