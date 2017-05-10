@@ -18,7 +18,7 @@ import common.User;
 
 /**
  * 服务器端数据访问层
- * @author yzj
+ * @author yzj    
  *
  */
 public class DataAccess implements IDataAccess{

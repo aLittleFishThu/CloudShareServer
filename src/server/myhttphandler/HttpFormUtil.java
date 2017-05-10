@@ -1,6 +1,8 @@
 package server.myhttphandler;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
+import java.net.URLDecoder;
 import java.util.List;
 
 import com.sun.net.httpserver.Headers;
@@ -21,7 +23,7 @@ public class HttpFormUtil {
 				return true;
 		}
 		else
-			return true;
+			return false;
 	}
 	
 	/**
@@ -44,6 +46,30 @@ public class HttpFormUtil {
 		return sessionID;
 	}
 	
+	/**
+	 * 从请求头中得到filename
+	 * @param requestHeader
+	 * @return
+	 */
+	public static String getFilename(Headers requestHeader){
+        if (!requestHeader.containsKey("Content-Disposition")){  //若Head中不包含Cookie，则返回403
+            return null;
+        }       
+        List<String> list=requestHeader.get("Content-Disposition"); //获取Cookie列表
+        String filename=null;
+        for (String aString:list){                    //遍历Cookie列表
+            if (aString.startsWith("form-data;name=")){
+                try {
+                    filename=URLDecoder.decode(aString.substring(15),"UTF-8");
+                } catch (UnsupportedEncodingException e) {
+                    // TODO 自动生成的 catch 块
+                    e.printStackTrace();
+                }            //获取sessionID
+                break;
+            }
+        }
+        return filename;
+    }
 	/**
 	 * 从URI中得到参数 
 	 * @param uri

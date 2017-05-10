@@ -53,7 +53,7 @@ public class FileHandler implements HttpHandler{
 		if (requestMethod.equals("POST")){         	
 			if (HttpFormUtil.judgeContentType(requestHeader, "application/json"))
 				handleRename(t,userID);					//POST+JSON: Rename
-			else
+			else 
 				handleUpload(t,userID);					//POST+file：upload
 		}
 		else if (requestMethod.equals("GET")){			//GET:download
@@ -71,12 +71,18 @@ public class FileHandler implements HttpHandler{
 		/**
 		 * 建立CloudFile，获取文件内容，调用接口
 		 */
-		URI uri=t.getRequestURI();						//获取URI
+		/*URI uri=t.getRequestURI();						//获取URI
 		String filename=HttpFormUtil.getQueryParameter(uri, "filename");
 		if (filename==null){  							//获取参数
 			t.sendResponseHeaders(400, -1);
 			return;
-		}
+		}*/
+	    Headers requestHeader=t.getRequestHeaders();
+	    String filename=HttpFormUtil.getFilename(requestHeader);
+	    if (filename==null){
+	        t.sendResponseHeaders(400, -1);
+            return;
+	    }
 		CloudFile cloudFile=new CloudFile(userID,filename);
 		InputStream content=t.getRequestBody();         //获取文件内容
 		UploadFileResult result=m_Business.uploadFile(cloudFile, content);   
