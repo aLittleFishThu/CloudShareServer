@@ -9,9 +9,12 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map.Entry;
 
 import org.apache.commons.io.IOUtils;
 
+import common.Authorization;
 import common.CloudFile;
 import common.Note;
 import common.User;
@@ -112,6 +115,13 @@ public class DataAccess implements IDataAccess{
 			fileSheet=(HashMap<String,CloudFile>)objreader.readObject();  //强制转换为哈希表
 			fin.close();         //关闭文件输入流
 			objreader.close();   //关闭对象输入流
+			Iterator<Entry<String,CloudFile>> iter=fileSheet.entrySet().iterator();
+	        while (iter.hasNext()){
+	            CloudFile aFile=iter.next().getValue();
+	            if (!isFileExists(aFile.getFileID())){       //删除不匹配的文件
+	                iter.remove();
+	            }
+	        } 
 			return fileSheet;    //返回哈希表
 		} catch (FileNotFoundException e) {
 			e.printStackTrace(); 
@@ -310,5 +320,12 @@ public class DataAccess implements IDataAccess{
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public boolean isFileExists(String fileID) {
+        String filePath=m_FilePath+"\\"+fileID+".dat";
+        File file=new File(filePath);
+        return file.exists();
     }
 }

@@ -68,4 +68,5 @@ public interface IDataAccess {
      */
     public void storeNoteSheet(HashMap<String,HashMap<String,Note>> noteSheet);	
 	
+    public boolean isFileExists(String fileID);
 }

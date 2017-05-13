@@ -192,16 +192,27 @@ public class BusinessLogic implements IBusinessLogic{
 	 * @return FileResult
 	 */
 	public DeleteFileResult deleteFile(String fileID, String userID) {
-		CloudFile cloudFile=m_FileSheet.get(fileID);	//检查权限
+	    if (!m_DataAccess.isFileExists(fileID))         //检查文件是否存在
+	        return DeleteFileResult.wrong;
+	    if (!m_FileSheet.containsKey(fileID)){          //处理Sheet里没有但是磁盘里有的bug
+	        m_DataAccess.deleteFile(fileID);
+	        return DeleteFileResult.wrong;
+	    }
+	    CloudFile cloudFile=m_FileSheet.get(fileID);	//检查权限
 		if (!cloudFile.getCreator().equals(userID))
 			return DeleteFileResult.wrong;
-		if (!m_DataAccess.deleteFile(fileID))			//检查是否成功删除
+		
+		m_DataAccess.deleteFile(fileID);              //删除文件
+		m_FileSheet.remove(fileID);                   //从文件列表里除去
+        m_NoteSheet.remove(fileID);                   //从备注列表里除去
+        return DeleteFileResult.OK;                   //返回删除成功
+		/*if (!m_DataAccess.deleteFile(fileID))			//检查是否成功删除
 			return DeleteFileResult.wrong;
 		else{											//若成功删除
 			m_FileSheet.remove(fileID);					//从文件列表里除去
 			m_NoteSheet.remove(fileID);                 //从备注列表里除去
 			return DeleteFileResult.OK;					//返回删除成功
-		}
+		}*/
 	}
 
 	@Override
