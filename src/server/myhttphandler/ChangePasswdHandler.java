@@ -52,7 +52,7 @@ public class ChangePasswdHandler implements HttpHandler{
 		 */
 		String sessionID=HttpFormUtil.getCookie(requestHeader);
 		String userID=m_Session.getUserID(sessionID);       //根据sessionID取出userID
-		if (userID==null){									//sessionID无效则返回403
+		if (userID==null){									//sessionID无效则返回401
 			t.sendResponseHeaders(401, -1);
 			return;
 		}

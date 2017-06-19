@@ -39,13 +39,13 @@ public class FileHandler implements HttpHandler{
 		 * 取出会话，判断Cookie
 		 */
 		Headers requestHeader=t.getRequestHeaders();   	//获取Header
-		/*String sessionID=HttpFormUtil.getCookie(requestHeader);
+		String sessionID=HttpFormUtil.getCookie(requestHeader);
 		String userID=m_Session.getUserID(sessionID);   //根据sessionID取出userID
 		if (userID==null){								//sessionID无效则返回401
 			t.sendResponseHeaders(401, -1);
 			return;
-		}*/
-		String userID="yzj";
+		}
+		//String userID="yzj";
 		/**
 		 * 以下进行Method判断，进一步分发任务，获得FileResult
 		 */

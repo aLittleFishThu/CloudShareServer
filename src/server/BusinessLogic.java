@@ -308,7 +308,7 @@ public class BusinessLogic implements IBusinessLogic{
             
         CloudFile cloudFile=m_FileSheet.get(fileID);
         if ((!cloudFile.getCreator().equals(userID))&&  //检查是否有权限
-            (cloudFile.getAuthorization().equals(Authorization.open)))
+            (!cloudFile.getAuthorization().equals(Authorization.open)))
             return new NoteListResult();
        
         ArrayList<Note> noteList=new ArrayList<Note>(m_NoteSheet.get(fileID).values());

@@ -40,14 +40,14 @@ public class DirectoryHandler implements HttpHandler{
 		/**
 		 * 以下进行Cookie判断
 		 */
-	/*	Headers requestHeader=t.getRequestHeaders();
+		Headers requestHeader=t.getRequestHeaders();
 		String sessionID=HttpFormUtil.getCookie(requestHeader);
 		String userID=m_Session.getUserID(sessionID);       //根据sessionID取出userID
-		if (userID==null){									//sessionID无效则返回403
+		if (userID==null){									//sessionID无效则返回401
 			t.sendResponseHeaders(401, -1);
 			return;
-		}*/
-		String userID="yzj";
+		}
+		//String userID="yzj";
 		/**
 		 * 以下进行参数提取
 		 */
